@@ -14,7 +14,9 @@ import {
   ArrowRight,
   TrendingDown,
   Info,
+  Download,
 } from 'lucide-react';
+import { exportDonationsToCsv } from '../utils/exportUtils';
 
 export default function DonorDashboard() {
   const {
@@ -618,9 +620,20 @@ export default function DonorDashboard() {
               <h3 className="text-base font-bold text-slate-900">
                 Active Donation Tracker
               </h3>
-              <span className="text-xs font-medium text-slate-500">
-                {donorDonations.length} total entries
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-slate-500">
+                  {donorDonations.length} total entries
+                </span>
+                <button
+                  type="button"
+                  onClick={() => exportDonationsToCsv(donorDonations, selectedDonor.name)}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-lg transition-colors"
+                  title="Export active donations to CSV for CSR audit"
+                >
+                  <Download className="w-3 h-3" />
+                  <span>Export CSV</span>
+                </button>
+              </div>
             </div>
 
             <div className="space-y-3">
