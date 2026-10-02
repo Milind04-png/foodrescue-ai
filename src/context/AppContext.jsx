@@ -9,6 +9,7 @@ import {
   DISTRIBUTION_HISTORY,
   FORECAST_DATA,
 } from '../data/mockData';
+import { sounds } from '../utils/soundEffects';
 
 const AppContext = createContext(null);
 
@@ -92,8 +93,9 @@ export function AppProvider({ children }) {
 
     setDonations((prev) => [newDonation, ...prev]);
 
-    // Confetti celebration
+    // Confetti & Audio celebration
     try {
+      sounds.playSuccess();
       confetti({
         particleCount: 80,
         spread: 70,
@@ -139,6 +141,7 @@ export function AppProvider({ children }) {
     );
 
     try {
+      sounds.playClaim();
       confetti({
         particleCount: 60,
         spread: 60,
