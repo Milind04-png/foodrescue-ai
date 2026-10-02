@@ -11,15 +11,18 @@
 
 You can download and run the frontend and backend independently as standalone packages:
 
-| Package | Direct Archive Link | What's Included | Standalone Run Command |
+| Package | Direct GitHub Download | What's Included | Standalone Run Command |
 |---|---|---|---|
-| **Frontend Package** | [📦 **Download `foodrescue-frontend.zip`**](exports/foodrescue-frontend.zip) | Modern React 19 + Tailwind v4 + Vite, pre-built `dist/`, standalone vanilla edition, `run_frontend.bat` | `npm install && npm run dev` (Port 5173) |
-| **Backend Package** | [📦 **Download `foodrescue-backend.zip`**](exports/foodrescue-backend.zip) | FastAPI server, Scikit-Learn ML engine, Arrhenius decay formula, automated tests, `run_backend.bat` | `pip install -r requirements.txt && python backend/main.py` (Port 8000) |
+| **Frontend Package** | [📦 **Download `foodrescue-frontend.zip`**](https://github.com/Milind04-png/foodrescue-ai/releases/download/v2.0.0/foodrescue-frontend.zip) | Modern React 19 + Tailwind v4 + Vite, pre-built `dist/`, standalone vanilla edition, `run_frontend.bat` | `npm install && npm run dev` (Port 5173) |
+| **Backend Package** | [📦 **Download `foodrescue-backend.zip`**](https://github.com/Milind04-png/foodrescue-ai/releases/download/v2.0.0/foodrescue-backend.zip) | FastAPI server, Scikit-Learn ML engine, Arrhenius decay formula, automated tests, `run_backend.bat` | `pip install -r requirements.txt && python backend/main.py` (Port 8000) |
 
 > 💡 **Dedicated Git Branches:**
 > - [`main`](https://github.com/Milind04-png/foodrescue-ai/tree/main): Full monorepo containing both frontend & backend.
 > - [`frontend`](https://github.com/Milind04-png/foodrescue-ai/tree/frontend): Decoupled frontend branch (React 19 + Vite + production assets).
 > - [`backend`](https://github.com/Milind04-png/foodrescue-ai/tree/backend): Decoupled backend branch (FastAPI + ML engine + tests).
+> 
+> 📦 **GitHub Releases**: [FoodRescue AI v2.0 Release](https://github.com/Milind04-png/foodrescue-ai/releases/tag/v2.0.0)
+
 
 ---
 
