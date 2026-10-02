@@ -21,6 +21,7 @@ import {
   TrendingDown,
   Award,
 } from 'lucide-react';
+import FaqGuide from './FaqGuide';
 
 export default function LandingPage() {
   const { metrics, setRole, donations } = useApp();
@@ -323,6 +324,11 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Platform Operational Guide & FAQs */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <FaqGuide />
       </section>
     </div>
   );
