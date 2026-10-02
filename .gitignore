@@ -43,4 +43,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # Export packages
-exports/
+exports/*
+!exports/*.zip
