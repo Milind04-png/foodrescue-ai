@@ -6,72 +6,42 @@ import {
   Sparkles,
   CheckCircle2,
   Scan,
-  RefreshCw,
+  Layers,
+  Upload,
+  Zap,
 } from 'lucide-react';
+import { AI_SCAN_PRESETS } from '../data/mockData';
 
 export default function AiScannerModal() {
   const { scannerModalOpen, setScannerModalOpen, addDonation, showToast } = useApp();
 
   const [scanning, setScanning] = useState(false);
-  const [selectedScan, setSelectedScan] = useState(null);
+  const [selectedPreset, setSelectedPreset] = useState(AI_SCAN_PRESETS[0]);
+  const [customTitle, setCustomTitle] = useState('');
 
   if (!scannerModalOpen) return null;
 
-  const mockScanScenarios = [
-    {
-      id: 'sc-1',
-      title: 'Commercial Steam Tray — Veg Biryani & Salan',
-      category: 'Cooked',
-      portions: 35,
-      weightKg: 12,
-      confidence: 97.4,
-      freshness: 'Optimal Hot Holding (69°C)',
-      fssaiGrade: 'Grade A Verified',
-      previewEmoji: '🥘',
-    },
-    {
-      id: 'sc-2',
-      title: 'Bakery Batch — Brioche Buns & Croissants',
-      category: 'Bakery',
-      portions: 40,
-      weightKg: 8,
-      confidence: 96.1,
-      freshness: 'Fresh Bake (< 4 hrs old)',
-      fssaiGrade: 'Grade A Verified',
-      previewEmoji: '🥐',
-    },
-    {
-      id: 'sc-3',
-      title: 'Buffet Salad Bar — Mixed Garden Greens',
-      category: 'Raw',
-      portions: 25,
-      weightKg: 10,
-      confidence: 94.8,
-      freshness: 'Chilled Crisp (< 4°C)',
-      fssaiGrade: 'Grade A Verified',
-      previewEmoji: '🥗',
-    },
-  ];
-
-  const handleRunScan = (scenario) => {
-    setSelectedScan(scenario);
+  const handleRunScan = (preset) => {
+    setSelectedPreset(preset);
     setScanning(true);
 
     setTimeout(() => {
       setScanning(false);
-    }, 1200);
+    }, 1000);
   };
 
-  const handleApplyToDonation = () => {
-    if (!selectedScan) return;
+  const handleApplyToBroadcast = () => {
+    if (!selectedPreset) return;
 
     addDonation({
-      title: selectedScan.title,
-      category: selectedScan.category,
+      title: customTitle.trim() || selectedPreset.itemTitle,
+      category: selectedPreset.category,
+      containerType: selectedPreset.name,
       diet: 'VEG',
-      quantityKg: selectedScan.weightKg,
-      portions: selectedScan.portions,
-      safeHours: selectedScan.category === 'Cooked' ? 4 : 12,
+      quantityKg: selectedPreset.calculatedWeightKg,
+      portions: selectedPreset.portionYield,
+      safeHours: selectedPreset.category === 'Cooked Meals' ? 6 : 12,
+      notes: `AI Vision volume estimated from ${selectedPreset.name} with ${selectedPreset.confidencePercent}% confidence.`,
     });
 
     setScannerModalOpen(false);
@@ -79,19 +49,19 @@ export default function AiScannerModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full overflow-hidden">
-        {/* Header */}
-        <div className="p-5 border-b border-slate-200 flex items-center justify-between">
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-2xl w-full overflow-hidden">
+        {/* Modal Header */}
+        <div className="p-5 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-teal-100 text-teal-800 flex items-center justify-center">
               <Camera className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-900">
-                AI Vision Food Scanner & Volume Estimator
+                AI Vision Fast-Listing Tool
               </h3>
               <p className="text-xs text-slate-500">
-                Simulated Computer Vision (YOLOv8 + FSSAI Thermal Model)
+                Gastronorm Container Volumetric & Portions Estimator
               </p>
             </div>
           </div>
@@ -103,16 +73,21 @@ export default function AiScannerModal() {
           </button>
         </div>
 
-        {/* Body */}
+        {/* Modal Body */}
         <div className="p-6 space-y-5">
-          <p className="text-xs text-slate-600">
-            Select a simulated kitchen food camera feed to detect volume, classify category, and estimate portions automatically:
-          </p>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              Select Container Snapshot / Tray:
+            </span>
+            <span className="text-xs text-teal-700 font-semibold bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
+              YOLOv8 Contours + Depth Estimation
+            </span>
+          </div>
 
-          {/* Scenario Selection Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {mockScanScenarios.map((sc) => {
-              const isSelected = selectedScan?.id === sc.id;
+          {/* 4 Preset Container Scenarios */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {AI_SCAN_PRESETS.map((sc) => {
+              const isSelected = selectedPreset?.id === sc.id;
               return (
                 <button
                   key={sc.id}
@@ -120,63 +95,73 @@ export default function AiScannerModal() {
                   onClick={() => handleRunScan(sc)}
                   className={`p-3.5 rounded-2xl border text-left transition-all relative ${
                     isSelected
-                      ? 'border-emerald-500 bg-emerald-50/50 shadow-xs ring-1 ring-emerald-400'
+                      ? 'border-teal-600 bg-teal-50/50 shadow-xs ring-1 ring-teal-500'
                       : 'border-slate-200 hover:border-slate-300 bg-slate-50/40'
                   }`}
                 >
-                  <div className="text-3xl mb-2">{sc.previewEmoji}</div>
-                  <div className="text-xs font-bold text-slate-900 line-clamp-1">
-                    {sc.category}
+                  <div className="flex items-start justify-between">
+                    <span className="text-3xl">{sc.imagePreviewEmoji}</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-200">
+                      {sc.confidencePercent}% Match
+                    </span>
                   </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">
-                    {sc.weightKg} kg · {sc.portions} portions
+                  <div className="text-xs font-bold text-slate-900 mt-2 line-clamp-1">
+                    {sc.name}
+                  </div>
+                  <div className="text-[11px] text-slate-600 font-medium mt-0.5">
+                    {sc.itemTitle}
+                  </div>
+                  <div className="flex items-center gap-2 text-[10px] text-teal-800 font-bold mt-2">
+                    <span>{sc.calculatedWeightKg} kg</span>
+                    <span>·</span>
+                    <span>~{sc.portionYield} portions</span>
                   </div>
                 </button>
               );
             })}
           </div>
 
-          {/* Scanning Animation / Scan Results Box */}
-          {selectedScan && (
-            <div className="bg-slate-900 text-white rounded-2xl p-5 relative overflow-hidden space-y-4">
+          {/* Neural Vision Scanning Box */}
+          {selectedPreset && (
+            <div className="bg-slate-950 text-white rounded-2xl p-5 relative overflow-hidden space-y-4 border border-slate-800">
               {scanning ? (
-                <div className="py-8 text-center space-y-3">
-                  <Scan className="w-10 h-10 text-emerald-400 mx-auto animate-spin" />
-                  <div className="text-sm font-semibold text-emerald-300">
-                    Running Neural Contour Detection & Thermal Profiling...
+                <div className="py-6 text-center space-y-3">
+                  <Scan className="w-10 h-10 text-teal-400 mx-auto animate-spin" />
+                  <div className="text-sm font-semibold text-teal-300">
+                    Computing Container Geometry & Volumetric Yield...
                   </div>
                   <div className="text-xs text-slate-400">
-                    Estimating cubic volume, moisture index, and FSSAI shelf life
+                    Standard Gastronorm depth detected. Calculating bulk density and thermal decay index.
                   </div>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <span className="text-xs font-mono text-emerald-400 flex items-center gap-1.5 font-bold">
+                    <span className="text-xs font-mono text-teal-400 flex items-center gap-1.5 font-bold">
                       <Sparkles className="w-4 h-4" />
-                      AI Scan Complete · {selectedScan.confidence}% Confidence
+                      AI Vision Inference Succeeded · {selectedPreset.confidencePercent}% Confidence
                     </span>
-                    <span className="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">
-                      {selectedScan.fssaiGrade}
+                    <span className="text-xs bg-teal-950 text-teal-300 border border-teal-800 px-2.5 py-0.5 rounded-full font-bold">
+                      {selectedPreset.recommendedTier}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3 text-xs">
                     <div>
                       <span className="text-slate-400 block text-[11px]">Detected Item:</span>
-                      <strong className="text-white text-sm">{selectedScan.title}</strong>
+                      <strong className="text-white text-sm">{selectedPreset.itemTitle}</strong>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[11px]">Thermal Status:</span>
-                      <strong className="text-emerald-400">{selectedScan.freshness}</strong>
+                      <span className="text-slate-400 block text-[11px]">Core Thermal Status:</span>
+                      <strong className="text-teal-400 text-sm">{selectedPreset.tempC}°C (Optimal)</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[11px]">Calculated Mass:</span>
-                      <strong className="text-white text-sm">{selectedScan.weightKg} kg</strong>
+                      <strong className="text-white text-sm">{selectedPreset.calculatedWeightKg} kg</strong>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[11px]">Portion Yield:</span>
-                      <strong className="text-emerald-400 text-sm">~{selectedScan.portions} portions</strong>
+                      <span className="text-slate-400 block text-[11px]">Standard Servings:</span>
+                      <strong className="text-teal-400 text-sm">~{selectedPreset.portionYield} portions</strong>
                     </div>
                   </div>
                 </>
@@ -185,7 +170,7 @@ export default function AiScannerModal() {
           )}
         </div>
 
-        {/* Footer */}
+        {/* Modal Footer */}
         <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
           <button
             type="button"
@@ -197,16 +182,16 @@ export default function AiScannerModal() {
 
           <button
             type="button"
-            disabled={!selectedScan || scanning}
-            onClick={handleApplyToDonation}
+            disabled={!selectedPreset || scanning}
+            onClick={handleApplyToBroadcast}
             className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              selectedScan && !scanning
-                ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
+              selectedPreset && !scanning
+                ? 'bg-teal-700 hover:bg-teal-800 text-white shadow-sm'
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
-            <span>Apply AI Scan & Broadcast</span>
+            <span>Apply AI Estimate & Broadcast</span>
           </button>
         </div>
       </div>

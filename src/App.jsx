@@ -6,7 +6,7 @@ import DonorDashboard from './components/DonorDashboard';
 import NgoPortal from './components/NgoPortal';
 import DeliveryHub from './components/DeliveryHub';
 import ImpactAnalytics from './components/ImpactAnalytics';
-import FoodSafetyModal from './components/FoodSafetyModal';
+import HandoverGateModal from './components/HandoverGateModal';
 import AiScannerModal from './components/AiScannerModal';
 import { CheckCircle2, Info, AlertCircle, Heart } from 'lucide-react';
 
@@ -28,7 +28,7 @@ function AppContent() {
       </main>
 
       {/* Global Modals */}
-      <FoodSafetyModal />
+      <HandoverGateModal />
       <AiScannerModal />
 
       {/* Real-time Reactive Toast Banner */}
@@ -64,8 +64,8 @@ function AppContent() {
                 <span className="font-extrabold text-slate-900 tracking-tight text-base">
                   FoodRescue <span className="text-emerald-500">AI</span>
                 </span>
-                <p className="text-xs text-slate-500">
-                  Save Food · Feed People · Build a Sustainable Tomorrow
+                <p className="text-xs text-slate-500 font-medium">
+                  Predict · Rescue · Redistribute · Sustain
                 </p>
               </div>
             </div>

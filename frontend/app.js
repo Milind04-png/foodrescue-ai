@@ -1,6 +1,6 @@
 /**
  * FoodRescue AI - Full Frontend Application Engine
- * Smart India Hackathon 2026 (SIH26234) - Team TECH TITANS
+ * Team TECH TITANS
  * 
  * Features:
  * - Real-time Reactive State (Donors, NGOs, Fleets, Live Donations, Impact KPIs)
@@ -144,7 +144,7 @@ class FoodRescueApp {
     // Start live decay countdown timer (updates every 5 seconds)
     this.startDecayTicker();
 
-    console.log("FoodRescue AI System Initialized Successfully. SIH26234 - TECH TITANS");
+    console.log("FoodRescue AI System Initialized Successfully. TECH TITANS");
   }
 
   async syncWithBackend() {
@@ -969,7 +969,7 @@ class FoodRescueApp {
     document.getElementById("cert-kg").textContent = `${totalKg} kg`;
     document.getElementById("cert-meals").textContent = `${totalMeals} Meals`;
     document.getElementById("cert-co2").textContent = `${co2e} kg CO2e`;
-    document.getElementById("cert-hash").textContent = `HASH: 8F7E-${Math.random().toString(36).substring(2, 9).toUpperCase()}-2026-FSSAI-SIH`;
+    document.getElementById("cert-hash").textContent = `HASH: 8F7E-${Math.random().toString(36).substring(2, 9).toUpperCase()}-2026-FSSAI-CSR`;
 
     modal.style.display = "flex";
   }
