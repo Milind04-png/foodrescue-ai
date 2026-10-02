@@ -314,6 +314,26 @@ if os.path.exists(static_target):
     @app.get("/")
     def serve_frontend_index():
         return FileResponse(os.path.join(static_target, "index.html"))
+else:
+    @app.get("/")
+    def serve_standalone_info():
+        return {
+            "system": "FoodRescue AI Backend Engine",
+            "version": "2.0.0",
+            "team": "TECH TITANS",
+            "docs": "/docs",
+            "status": "/api/status",
+            "endpoints": [
+                "/api/status",
+                "/api/data",
+                "/api/predict-demand",
+                "/api/check-shelf-life",
+                "/api/match",
+                "/api/donations",
+                "/api/impact-summary",
+                "/api/certificate/generate"
+            ]
+        }
 
 if __name__ == "__main__":
     import uvicorn
