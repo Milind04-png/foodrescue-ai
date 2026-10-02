@@ -28,6 +28,9 @@ export default function DeliveryHub() {
 
   const [selectedRoute, setSelectedRoute] = useState('active-1');
   const [filterMode, setFilterMode] = useState('ALL');
+  const [trafficCondition, setTrafficCondition] = useState('Green Corridor');
+
+  const etaMinutes = trafficCondition === 'Green Corridor' ? 14 : trafficCondition === 'Moderate Traffic' ? 19 : 27;
 
   // Filter tasks that need pickup or transit
   const deliveryTasks = donations.filter(
@@ -79,9 +82,18 @@ export default function DeliveryHub() {
                 </h3>
               </div>
               <div className="flex items-center gap-2 text-xs">
+                <select
+                  value={trafficCondition}
+                  onChange={(e) => setTrafficCondition(e.target.value)}
+                  className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-slate-700 cursor-pointer focus:ring-1 focus:ring-emerald-500"
+                >
+                  <option value="Green Corridor">🌿 Green Corridor (Optimal)</option>
+                  <option value="Moderate Traffic">🟡 Moderate Traffic</option>
+                  <option value="Peak Congestion">🔴 Peak Congestion</option>
+                </select>
                 <span className="flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                  GPS & Telematics Live
+                  GPS Live
                 </span>
               </div>
             </div>
@@ -197,12 +209,14 @@ export default function DeliveryHub() {
                 <div className="flex items-center justify-between font-bold text-slate-900">
                   <span className="text-emerald-700 flex items-center gap-1">
                     <Zap className="w-3.5 h-3.5 fill-emerald-600" />
-                    Optimal Green Corridor
+                    {trafficCondition}
                   </span>
-                  <span>4.2 km · 14 mins</span>
+                  <span>4.2 km · {etaMinutes} mins</span>
                 </div>
                 <p className="text-[11px] text-slate-500">
-                  Avoiding Ring Road congestion; cold-chain box temp maintained at 64.2°C.
+                  {trafficCondition === 'Green Corridor'
+                    ? 'Avoiding Ring Road congestion; cold-chain box temp maintained at 64.2°C.'
+                    : 'Dynamic AI re-routing active to avoid bottleneck delay and protect safe window.'}
                 </p>
                 <div className="pt-1 flex items-center gap-2 text-[10px] text-emerald-800 font-semibold">
                   <span>EV Carbon Saved: 1.85 kg CO₂e</span>
