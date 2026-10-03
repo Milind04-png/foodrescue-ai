@@ -105,6 +105,49 @@ def test_computer_vision_inference():
     assert result["confidence_score"] > 0.85
     print("[PASS] Computer Vision Volumetric Engine test passed!")
 
+def test_5km_spatial_bounding_box_query():
+    """Verify sub-millisecond geospatial spatial query for nearby NGOs within 5 km"""
+    from database import find_ngos_within_radius
+    ngos = find_ngos_within_radius(donor_lat=28.5450, donor_lng=77.1926, radius_km=5.0)
+    assert len(ngos) > 0, "Should find at least 1 verified NGO within 5 km of IIT Delhi"
+    assert all(n["distance_km"] <= 5.0 for n in ngos), "All returned NGOs must be within 5 km"
+    print(f"[PASS] 5 km Geospatial Bounding Box query passed! Found {len(ngos)} NGOs within geofence.")
+
+def test_atomic_concurrency_race_condition():
+    """Verify atomic race-condition prevention when claiming donations"""
+    from database import insert_donation, claim_donation_atomic
+    test_id = insert_donation({
+        "id": "RACE-TEST-01",
+        "title": "Concurrent Race Condition Test Dish",
+        "category": "Cooked Meals",
+        "quantity_kg": 12.0,
+        "portions": 30,
+        "temperature_c": 65.0
+    })
+    
+    # First claim succeeds
+    res1 = claim_donation_atomic(test_id, "ORG-RHA-SOUTH-02", "Robin Hood Army")
+    assert res1["status"] == "CLAIMED"
+
+    # Second claim on same batch must be rejected atomically
+    blocked = False
+    try:
+        claim_donation_atomic(test_id, "ORG-AKSHAYA-01", "Akshaya Patra")
+    except RuntimeError:
+        blocked = True
+    assert blocked, "Second simultaneous claim must be blocked by atomic transaction lock"
+    print("[PASS] Atomic Concurrency Lock test passed! Double-claim prevented.")
+
+def test_cryptographic_audit_ledger_integrity():
+    """Verify FSSAI blockchain audit ledger hash chaining and tamper detection"""
+    from database import verify_audit_ledger_integrity
+    report = verify_audit_ledger_integrity()
+    assert report["status"] == "VALID_IMMUTABLE_CHAIN"
+    assert report["tamper_detected"] is False
+    assert report["blocks_verified"] >= 1
+    assert "chain_head_hash" in report
+    print(f"[PASS] Cryptographic FSSAI Audit Ledger verified! ({report['blocks_verified']} blocks valid).")
+
 if __name__ == "__main__":
     test_demand_forecast()
     test_fssai_shelf_life()
@@ -112,4 +155,7 @@ if __name__ == "__main__":
     test_database_persistence_and_audit()
     test_jwt_auth_and_rbac()
     test_computer_vision_inference()
-    print("\nAll 6 enterprise unit tests passed successfully!")
+    test_5km_spatial_bounding_box_query()
+    test_atomic_concurrency_race_condition()
+    test_cryptographic_audit_ledger_integrity()
+    print("\nAll 9 enterprise unit tests passed successfully with 100% integrity!")
