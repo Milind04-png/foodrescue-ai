@@ -57,9 +57,11 @@ def test_matching_algorithm():
 
 def test_database_persistence_and_audit():
     """Verify SQLite persistent database insertions and audit logs"""
+    import uuid
     from database import insert_donation, list_all_donations, log_audit_db, get_all_audit_logs
+    unique_id = f"TEST-DB-{uuid.uuid4().hex[:6].upper()}"
     test_id = insert_donation({
-        "id": "TEST-DB-01",
+        "id": unique_id,
         "title": "UnitTest Paneer Gravy",
         "category": "Cooked Meals",
         "quantity_kg": 15.0,
@@ -67,10 +69,10 @@ def test_database_persistence_and_audit():
         "temperature_c": 64.0
     })
     donations = list_all_donations()
-    found = any(d["id"] == "TEST-DB-01" for d in donations)
+    found = any(d["id"] == unique_id for d in donations)
     assert found, "Donation should be retrieved from SQLite"
     
-    audit = log_audit_db("TEST-DB-01", "ACTOR-1", "Test Inspector", "admin", "Unit Test Audit", 64.0)
+    audit = log_audit_db(unique_id, "ACTOR-1", "Test Inspector", "admin", "Unit Test Audit", 64.0)
     assert "verification_hash" in audit
     logs = get_all_audit_logs()
     assert len(logs) > 0
@@ -115,9 +117,11 @@ def test_5km_spatial_bounding_box_query():
 
 def test_atomic_concurrency_race_condition():
     """Verify atomic race-condition prevention when claiming donations"""
+    import uuid
     from database import insert_donation, claim_donation_atomic
+    unique_race_id = f"RACE-TEST-{uuid.uuid4().hex[:6].upper()}"
     test_id = insert_donation({
-        "id": "RACE-TEST-01",
+        "id": unique_race_id,
         "title": "Concurrent Race Condition Test Dish",
         "category": "Cooked Meals",
         "quantity_kg": 12.0,
