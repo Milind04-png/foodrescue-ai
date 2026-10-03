@@ -45,3 +45,11 @@ yarn-error.log*
 # Export packages
 exports/*
 !exports/*.zip
+
+# Databases
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
