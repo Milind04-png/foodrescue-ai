@@ -13,6 +13,7 @@ import {
   Printer,
   Sparkles,
 } from 'lucide-react';
+import BleProbeConnector from './BleProbeConnector';
 
 export default function HandoverGateModal() {
   const { handoverModalItem, setHandoverModalItem, advanceDeliveryStep, showToast } = useApp();
@@ -93,7 +94,9 @@ export default function HandoverGateModal() {
 
           {/* Core Temperature Probe Verification */}
           <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
-            <div className="flex items-center justify-between">
+            <BleProbeConnector onTemperatureSync={(t) => setCoreTemp(t)} />
+
+            <div className="flex items-center justify-between pt-2">
               <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                 <Thermometer className="w-4 h-4 text-teal-600" />
                 <span>Handover Core Temperature Probe</span>

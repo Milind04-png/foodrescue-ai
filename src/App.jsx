@@ -8,10 +8,11 @@ import DeliveryHub from './components/DeliveryHub';
 import ImpactAnalytics from './components/ImpactAnalytics';
 import HandoverGateModal from './components/HandoverGateModal';
 import AiScannerModal from './components/AiScannerModal';
+import AuthModal from './components/AuthModal';
 import { CheckCircle2, Info, AlertCircle, Heart } from 'lucide-react';
 
 function AppContent() {
-  const { role, toastMessage, setRole } = useApp();
+  const { role, toastMessage, setRole, authModalOpen, setAuthModalOpen } = useApp();
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-emerald-500 selection:text-white">
@@ -30,6 +31,7 @@ function AppContent() {
       {/* Global Modals */}
       <HandoverGateModal />
       <AiScannerModal />
+      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
 
       {/* Real-time Reactive Toast Banner */}
       {toastMessage && (

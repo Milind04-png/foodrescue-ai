@@ -33,6 +33,27 @@ export function AppProvider({ children }) {
   const [scannerModalOpen, setScannerModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
+  // Authenticated RBAC state
+  const [authUser, setAuthUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('foodrescue_user');
+      return saved
+        ? JSON.parse(saved)
+        : {
+            id: 'U-DONOR-1',
+            email: 'chef.iitd@foodrescue.ai',
+            role: 'donor',
+            name: 'Chef Rajesh Sharma',
+            organization_name: 'IIT Delhi Main Dining Hall',
+            fssai_license: '10021011000452',
+            token: 'jwt-default-session',
+          };
+    } catch (e) {
+      return null;
+    }
+  });
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+
   // Live countdown timer decrement and dynamic escalation tier transition
   useEffect(() => {
     const timer = setInterval(() => {
@@ -365,6 +386,10 @@ export function AppProvider({ children }) {
         setHandoverModalItem,
         scannerModalOpen,
         setScannerModalOpen,
+        authUser,
+        setAuthUser,
+        authModalOpen,
+        setAuthModalOpen,
         toastMessage,
         showToast,
         addDonation,

@@ -21,6 +21,8 @@ export default function Navbar() {
     selectedDonor,
     resetDemoState,
     setScannerModalOpen,
+    authUser,
+    setAuthModalOpen,
   } = useApp();
 
   // Active listings in either Pending Match or Claimed
@@ -117,14 +119,28 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Right Action: AI Camera Fast Scan */}
-          <div className="hidden lg:flex items-center gap-2">
+          {/* Right Action: AI Camera Fast Scan & Auth RBAC Trigger */}
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setScannerModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-teal-700 hover:bg-teal-800 text-white shadow-sm transition-all"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all"
             >
               <Camera className="w-3.5 h-3.5" />
               <span>AI Vision Scan</span>
+            </button>
+
+            <button
+              onClick={() => setAuthModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white shadow-xs border border-slate-700 transition-all"
+              title="Identity & RBAC Governance"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="max-w-[110px] truncate hidden md:inline">
+                {authUser ? authUser.name.split(' ')[0] : 'Sign In'}
+              </span>
+              <span className="text-[10px] font-mono bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded uppercase">
+                {authUser ? authUser.role : 'RBAC'}
+              </span>
             </button>
           </div>
         </div>

@@ -16,6 +16,7 @@ import {
   FileText,
   MapPin,
 } from 'lucide-react';
+import InteractiveMap from './InteractiveMap';
 
 export default function DeliveryHub() {
   const {
@@ -77,114 +78,8 @@ export default function DeliveryHub() {
         {/* Left Column: Interactive Micro-Route Map (7 cols) */}
         <div className="lg:col-span-7 space-y-4">
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
-            {/* Map Header */}
-            <div className="p-4 border-b border-slate-200/80 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Navigation className="w-4 h-4 text-teal-600" />
-                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                  Live Micro-Logistics Map (5 km Radius)
-                </h3>
-              </div>
-
-              {/* Traffic Condition Selector */}
-              <div className="flex items-center gap-2 text-xs">
-                <select
-                  value={trafficCondition}
-                  onChange={(e) => setTrafficCondition(e.target.value)}
-                  className="text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1 text-slate-700 cursor-pointer focus:ring-1 focus:ring-teal-500"
-                >
-                  <option value="Green Corridor">🌿 Green Corridor (Optimal)</option>
-                  <option value="Moderate Traffic">🟡 Moderate Ring Road Traffic</option>
-                  <option value="Peak Congestion">🔴 Peak City Congestion</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Interactive Vector Map Canvas */}
-            <div className="relative h-96 bg-slate-100 overflow-hidden select-none">
-              {/* Map background grid */}
-              <div
-                className="absolute inset-0 opacity-40"
-                style={{
-                  backgroundImage: 'radial-gradient(circle, #94a3b8 1px, transparent 1px)',
-                  backgroundSize: '24px 24px',
-                }}
-              ></div>
-
-              {/* Simulated Map Road Networks (SVG) */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                <path d="M 40 180 Q 200 140 380 200 T 700 170" stroke="#CBD5E1" strokeWidth="8" fill="none" />
-                <path d="M 120 40 Q 220 220 340 350" stroke="#CBD5E1" strokeWidth="6" fill="none" />
-                <path d="M 380 60 Q 420 240 580 340" stroke="#CBD5E1" strokeWidth="6" fill="none" />
-
-                {/* Active AI-Optimized Route (Glowing Emerald Line) */}
-                <path
-                  d="M 160 140 C 240 160, 320 180, 480 220"
-                  stroke="#0F766E"
-                  strokeWidth="4"
-                  strokeDasharray="6 4"
-                  fill="none"
-                  className="animate-pulse"
-                />
-              </svg>
-
-              {/* Pin 1: Donor Node (IIT Delhi Central Mess) */}
-              <div className="absolute top-[120px] left-[140px] transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer z-10">
-                <div className="w-8 h-8 rounded-full bg-teal-700 border-2 border-white shadow-md flex items-center justify-center text-white text-xs font-bold group-hover:scale-110 transition-transform">
-                  🏛️
-                </div>
-                <div className="absolute top-9 left-1/2 -translate-x-1/2 bg-white/95 px-2 py-0.5 rounded shadow-xs text-[10px] font-bold text-slate-800 whitespace-nowrap border border-slate-200">
-                  IIT Delhi Dining Hall
-                </div>
-              </div>
-
-              {/* Pin 2: Recipient NGO Shelter (Akshaya Patra) */}
-              <div className="absolute top-[210px] left-[470px] transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer z-10">
-                <div className="w-8 h-8 rounded-full bg-sky-600 border-2 border-white shadow-md flex items-center justify-center text-white text-xs font-bold group-hover:scale-110 transition-transform">
-                  🤝
-                </div>
-                <div className="absolute top-9 left-1/2 -translate-x-1/2 bg-white/95 px-2 py-0.5 rounded shadow-xs text-[10px] font-bold text-slate-800 whitespace-nowrap border border-slate-200">
-                  Akshaya Patra Shelter
-                </div>
-              </div>
-
-              {/* Pin 3: Moving 2-Wheeler EV Courier */}
-              <div className="absolute top-[175px] left-[310px] transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer z-20">
-                <div className="w-9 h-9 rounded-full bg-amber-500 border-2 border-white shadow-lg flex items-center justify-center text-white text-xs font-bold animate-bounce">
-                  🛵
-                </div>
-                <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-2 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap shadow-sm">
-                  Rajesh (Ather EV) · ETA {etaMinutes}m
-                </div>
-              </div>
-
-              {/* Pin 4: Zero-Landfill Biogas Plant (Okhla) */}
-              <div className="absolute top-[290px] left-[560px] transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer z-10">
-                <div className="w-7 h-7 rounded-full bg-purple-600 border-2 border-white shadow-md flex items-center justify-center text-white text-[11px] font-bold">
-                  ♻️
-                </div>
-                <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-white/95 px-2 py-0.5 rounded shadow-xs text-[9px] font-semibold text-slate-700 whitespace-nowrap border border-slate-200">
-                  MCD Biogas Unit
-                </div>
-              </div>
-
-              {/* Map Telematics Overlay Card */}
-              <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-xs p-3.5 rounded-2xl border border-slate-200 shadow-md text-xs space-y-1 z-20 max-w-xs">
-                <div className="flex items-center justify-between font-bold text-slate-900">
-                  <span className="text-teal-700 flex items-center gap-1 font-bold">
-                    <Zap className="w-3.5 h-3.5 fill-teal-600" />
-                    {trafficCondition}
-                  </span>
-                  <span>2.8 km · {etaMinutes} mins</span>
-                </div>
-                <p className="text-[11px] text-slate-500">
-                  Insulated thermal box holding core temperature at <strong>66.5°C</strong>.
-                </p>
-                <div className="pt-1 text-[10px] text-emerald-800 font-bold">
-                  <span>EV Carbon Averted: 1.4 kg CO₂e</span>
-                </div>
-              </div>
-            </div>
+            {/* Real Geospatial Leaflet Map */}
+            <InteractiveMap />
 
             {/* Courier Fleet Telematics */}
             <div className="p-4 bg-slate-50/70 border-t border-slate-200/80">
