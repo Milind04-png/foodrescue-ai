@@ -30,6 +30,7 @@ from ml_engine import ml_engine
 from vision_engine import vision_engine
 import database as db
 import auth
+from cache import cache
 
 app = FastAPI(
     title="FoodRescue AI Enterprise API",
@@ -306,31 +307,42 @@ def create_donation(req: CreateDonationRequest):
 
 @app.post("/api/claim")
 def claim_donation(req: ClaimDonationRequest):
-    db.claim_donation_db(
-        donation_id=req.donation_id,
-        ngo_id=req.ngo_id,
-        ngo_name=req.ngo_name,
-        driver_id=req.driver_id or "VOL-4",
-        driver_name=req.driver_name or "Amit Kumar (EV Rider #4)"
-    )
+    """
+    Atomic race-condition free claim using Optimistic Concurrency Control.
+    Prevents double-claim collision if multiple NGOs click simultaneously.
+    """
+    try:
+        return db.claim_donation_atomic(
+            batch_id=req.donation_id,
+            ngo_id=req.ngo_id,
+            ngo_name=req.ngo_name,
+            driver_id=req.driver_id or "U-DELIVERY-1",
+            driver_name=req.driver_name or "Amit Kumar (EV Rider #4)"
+        )
+    except RuntimeError as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
-    # Audit log the claim
-    db.log_audit_db(
-        donation_id=req.donation_id,
-        actor_id=req.ngo_id,
-        actor_name=req.ngo_name,
-        actor_role="ngo",
-        action="Donation Claimed & EV Courier Dispatched",
-        temp=64.0,
-        details="Micro-logistics reservation confirmed."
-    )
-
+@app.get("/api/spatial/nearby-ngos")
+def get_nearby_ngos(lat: float = 28.5450, lng: float = 77.1926, radius_km: float = 5.0):
+    """
+    Sub-millisecond 5 km Geospatial Bounding Box Spatial Query.
+    Finds verified NGOs within micro-radius of institutional donor node.
+    """
     return {
-        "status": "CLAIMED",
-        "donation_id": req.donation_id,
-        "allocated_ngo": req.ngo_name,
-        "assigned_driver": req.driver_name
+        "origin_coordinates": {"latitude": lat, "longitude": lng},
+        "geofence_radius_km": radius_km,
+        "nearby_verified_ngos": db.find_ngos_within_radius(lat, lng, radius_km)
     }
+
+@app.get("/api/audit/verify-integrity")
+def verify_audit_ledger_integrity():
+    """
+    FSSAI Cryptographic Blockchain Ledger Audit Endpoint.
+    Validates the entire hash chain from Genesis block to HEAD to prove zero records were altered.
+    """
+    return db.verify_audit_ledger_integrity()
 
 @app.post("/api/handover/advance-step")
 def advance_delivery(donation_id: str):
@@ -341,13 +353,13 @@ def advance_delivery(donation_id: str):
 
 @app.post("/api/handover/audit-log")
 def create_handover_audit_log(req: HandoverAuditRequest):
-    audit_res = db.log_audit_db(
-        donation_id=req.donation_id,
+    audit_res = db.append_audit_ledger_entry(
+        batch_id=req.donation_id,
         actor_id=req.actor_id,
         actor_name=req.actor_name,
         actor_role=req.actor_role,
         action=req.action,
-        temp=req.temperature_logged,
+        core_temp=req.temperature_logged,
         details=req.details or "Good Samaritan Indemnity Active"
     )
     return audit_res
@@ -355,6 +367,11 @@ def create_handover_audit_log(req: HandoverAuditRequest):
 @app.get("/api/audit-logs")
 def get_audit_trail():
     return db.get_all_audit_logs()
+
+@app.get("/api/cache/telematics")
+def get_fleet_telematics():
+    """Returns hot ephemeral vehicle GPS telematics from memory/Redis cache without touching disk."""
+    return cache.get_fleet_telematics()
 
 # --- IoT Bluetooth & Telematics Simulation Routes ---
 
