@@ -4,7 +4,10 @@
   "description": "AI-Powered Smart Food Waste Reduction and Sustainable Redistribution Ecosystem",
   "type": "module",
   "scripts": {
+    "start": "run.bat",
     "dev": "vite",
+    "dev:all": "dev.bat",
+    "backend": "python backend/main.py",
     "build": "vite build",
     "preview": "vite preview"
   },

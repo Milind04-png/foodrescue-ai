@@ -26,7 +26,8 @@ wheels/
 
 # Vite / IDE
 .vite/
-.vscode/
+.vscode/*
+!.vscode/tasks.json
 .idea/
 *.swp
 *.swo
